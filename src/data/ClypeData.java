@@ -17,10 +17,10 @@ import java.util.Date;
 
 public abstract class ClypeData implements Serializable{
 	
-	private static final int LISTUSERS = 0;
-	private static final int DONE = 1;
-	private static final int SENDFILE = 2;
-	private static final int SENDMESSAGE = 3;
+	protected static final int LISTUSERS = 0;
+	protected static final int DONE = 1;
+	protected static final int SENDFILE = 2;
+	protected static final int SENDMESSAGE = 3;
 	
 	private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	

@@ -18,7 +18,7 @@ public class MessageClypeData extends ClypeData {
 		super(userName, type);
 		this.message = this.encrypt(message, key);
 		
-		if(type == ClypeData.FILE){
+		if(type == ClypeData.SENDFILE){
 			throw new IllegalArgumentException("FileClypeData instantiated with non-file type.");
 		}
 	}
@@ -32,7 +32,7 @@ public class MessageClypeData extends ClypeData {
 		super(userName, type);
 		this.message = message;
 		
-		if(type == ClypeData.FILE){
+		if(type == ClypeData.SENDFILE){
 			throw new IllegalArgumentException("FileClypeData instantiated with non-file type.");
 		}
 	}

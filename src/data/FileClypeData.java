@@ -21,7 +21,7 @@ public class FileClypeData extends ClypeData {
 		this.fileName = fileName;
 		this.fileContents = "";
 		
-		if(type != ClypeData.FILE){
+		if(type != ClypeData.SENDFILE){
 			throw new IllegalArgumentException("FileClypeData instantiated with non-file type.");
 		}
 	}
