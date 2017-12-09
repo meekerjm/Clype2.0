@@ -101,7 +101,7 @@ public class ClypeClient {
 	}
 	
 	private void sendUserName() {
-		this.dataToSendToServer = new MessageClypeData(userName, userName, ClypeData.MESSAGE);
+		this.dataToSendToServer = new MessageClypeData(userName, userName, ClypeData.SENDMESSAGE);
 		sendData();
 	}
 	
@@ -164,20 +164,20 @@ public class ClypeClient {
 	
 	public void readClientData() throws FileNotFoundException, IOException {
 		System.out.println("Select Session Type");
-		System.out.println(ClypeData.USERLIST + ": List users");
-		System.out.println(ClypeData.LOGOUT + ": Close Connection");
-		System.out.println(ClypeData.FILE + ": Send File");
-		System.out.println(ClypeData.MESSAGE + ": Send Message");
+		System.out.println(ClypeData.LISTUSERS + ": List users");
+		System.out.println(ClypeData.DONE + ": Close Connection");
+		System.out.println(ClypeData.SENDFILE + ": Send File");
+		System.out.println(ClypeData.SENDMESSAGE + ": Send Message");
 		
 		int session = inFromStd.nextInt();
 		
-		if (session == ClypeData.LOGOUT) {
+		if (session == ClypeData.DONE) {
 			closedConnection = true; 
 		}
-		else if (session == ClypeData.FILE) {
+		else if (session == ClypeData.SENDFILE) {
 			System.out.println("Enter filename");
 			String in = inFromStd.next();
-			dataToSendToServer = new FileClypeData(this.userName, in, ClypeData.FILE);
+			dataToSendToServer = new FileClypeData(this.userName, in, ClypeData.SENDFILE);
 			
 			try {
 				((FileClypeData) dataToSendToServer).readFileContents();
@@ -186,22 +186,22 @@ public class ClypeClient {
 				dataToSendToServer = null;
 			}
 		}
-		else if (session == ClypeData.USERLIST) {
-			this.dataToSendToServer = new MessageClypeData(userName, "list users", ClypeData.USERLIST);
+		else if (session == ClypeData.LISTUSERS) {
+			this.dataToSendToServer = new MessageClypeData(userName, "list users", ClypeData.LISTUSERS);
 		}
 		
 		else { //message
 			System.out.println("Message");
 			String in = inFromStd.next();
-			dataToSendToServer = new MessageClypeData(this.userName, in, ClypeData.MESSAGE);
+			dataToSendToServer = new MessageClypeData(this.userName, in, ClypeData.SENDMESSAGE);
 		}	
 	}
 	
 	public void printData() {
-		if (this.dataToReceiveFromServer.getType() == ClypeData.FILE) {
+		if (this.dataToReceiveFromServer.getType() == ClypeData.SENDFILE) {
 			((FileClypeData) dataToReceiveFromServer).writeFileContents();
 		}
-		else if (this.dataToReceiveFromServer.getType() == ClypeData.MESSAGE) {
+		else if (this.dataToReceiveFromServer.getType() == ClypeData.SENDMESSAGE) {
 			System.out.println(((MessageClypeData) dataToReceiveFromServer).getData());
 		}
 	}

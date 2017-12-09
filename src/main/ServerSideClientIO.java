@@ -84,7 +84,6 @@ public class ServerSideClientIO implements Runnable
 		return userName;
 	}
 
-	@Override
 	public void run() {
 		
 		try

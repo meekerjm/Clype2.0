@@ -66,7 +66,7 @@ public class MessageClypeData extends ClypeData {
 	 */
 	public String toString() {
 		return "MessageClypeData\n"+
-				"Username: " + this.userName + "\n" +
+				"Username: " + this.getUserName() + "\n" +
 				"Message: " + this.message + "\n" +
 				"";
 	}
