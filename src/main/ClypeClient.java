@@ -164,7 +164,6 @@ public class ClypeClient {
 	
 	public void readClientData()
 	{
-		//System.out.println("Enter a message:");
 		String input = inFromStd.nextLine();
 		if(input.equals("DONE"))
 		{
