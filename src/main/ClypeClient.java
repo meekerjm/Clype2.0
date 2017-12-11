@@ -107,34 +107,30 @@ public class ClypeClient {
 	
 	public void start() {
 		try {
-			this.inFromStd = new java.util.Scanner(System.in);
-			Socket socket = new Socket(this.hostName, this.port);
-
-			this.outToServer = new ObjectOutputStream(socket.getOutputStream());
-			this.inFromServer = new ObjectInputStream(socket.getInputStream());
-			System.out.println("Connected to server.");
-
-			Thread listener = new Thread(new ClientSideServerListener(this));
-			listener.start();
-
-			sendUserName();
-			System.out.println("Enter a message to send to other users: ");
-
-			while (!this.closed()) {
+			inFromStd = new Scanner(System.in);
+			Socket skt = new Socket(hostName, port);
+			outToServer = new ObjectOutputStream(skt.getOutputStream());
+			inFromServer = new ObjectInputStream(skt.getInputStream());
+			System.out.println("Connection Established");
+			
+			ClientSideServerListener listener = new ClientSideServerListener(this);
+			Thread lst = new Thread(listener);
+			lst.start();
+			
+			dataToSendToServer = new MessageClypeData(userName, userName + " has joined the server.", 3);
+			sendData();
+			
+			while(closedConnection == false)
+			{
 				readClientData();
 				sendData();
 			}
-
-			try {
-				listener.join();
-			} catch (InterruptedException ie) {
-				System.err.println(ie.getMessage());
-			}
-
-			this.outToServer.close();
-			this.inFromServer.close();
-			this.inFromStd.close();
-			socket.close();
+			lst.join();
+			outToServer.close();
+			inFromServer.close();
+			inFromStd.close();
+			skt.close();
+			
 		} catch (BindException ex) {
 			System.err.println("Unable to bind a socket.");
 			ex.printStackTrace(System.err);
@@ -158,6 +154,9 @@ public class ClypeClient {
 		} catch (IOException ex) {
 			System.err.println("IO Error");
 			ex.printStackTrace(System.err);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 }
@@ -200,16 +199,16 @@ public class ClypeClient {
 		if (this.dataToReceiveFromServer.getType() == ClypeData.SENDFILE) {
 			((FileClypeData) dataToReceiveFromServer).writeFileContents();
 		}
-		else if (this.dataToReceiveFromServer.getType() == ClypeData.SENDMESSAGE) {
+		else{
 			System.out.println(((MessageClypeData) dataToReceiveFromServer).getData());
 		}
 	}
 	
 	public void sendData() {
 		try {
-			this.outToServer.writeObject(dataToSendToServer);
+			outToServer.writeObject(dataToSendToServer);
 		} catch (IOException e) {
-			System.err.println("File error!");
+			System.err.println("File error (sendData)!");
 			e.printStackTrace(System.err);
 		}
 		
@@ -225,7 +224,7 @@ public class ClypeClient {
 			System.err.println("Strange error!");
 			e.printStackTrace(System.err);
 		} catch (IOException e) {
-			System.err.println("File error!");
+			System.err.println("File error (receiveData)!");
 			e.printStackTrace(System.err);
 		}
 	}
@@ -281,37 +280,39 @@ public class ClypeClient {
 				this.dataToSendToServer + this.dataToReceiveFromServer;
 	}
 	
-	public static void main(String[] args) {
-		ClypeClient client;
-		String username = DEFAULT_USER;
-		String hostname = DEFAULT_HOST;
-		int port = DEFAULT_PORT;
-		
-		if (args.length > 0) {
-			Scanner argReader = new Scanner(args[0]);
-			argReader.useDelimiter("[@:]");
-
-			if (argReader.hasNext()) {
-				username = argReader.next();
-			}
-			if (argReader.hasNext()) {
-				hostname = argReader.next();
-			}
-			if (argReader.hasNext()) {
-				port = argReader.nextInt();
-			}
-			else {
-				System.out.println("java -jar ClypeClient [username] [hostname] [port]");
-				System.exit(-1);
-			}
-			argReader.close();
+	public static void main(String[] args)
+	{
+		if(args.length == 0)
+		{
+			ClypeClient client = new ClypeClient();
+			client.start();			
 		}
-		
-		client = new ClypeClient(username, hostname, port);
-			
-		client.start();
-	}
-
-	
-
+		else if(args.length == 1)
+		{
+			String[] arguments = args[0].split("@");
+			if(arguments.length == 2)
+			{
+				String[] port = arguments[1].split(":");
+				if(port.length == 2)
+				{
+					ClypeClient client = new ClypeClient(arguments[0], port[0], Integer.parseInt(port[1]));
+					client.start();
+				}
+				else
+				{
+					ClypeClient client = new ClypeClient(arguments[0], port[0]);
+					client.start();
+				}
+			}
+			else
+			{
+				ClypeClient client = new ClypeClient(arguments[0]);
+				client.start();
+			}
+		}
+		else
+		{
+			System.out.println("Too many arguments provided");
+		}
+	}	
 }

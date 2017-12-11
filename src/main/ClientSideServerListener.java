@@ -10,9 +10,12 @@ public class ClientSideServerListener implements Runnable {
 		/***
 		 * Runs the listener.
 		 */
+		@Override
 		public void run() {
 			while (!client.closed()) {
-					client.printData();
+				client.receiveData();
+				client.printData();
 			}
+			return;
 		}
 }

@@ -52,11 +52,7 @@ public class ServerSideClientIO implements Runnable
 	{
 		try {
 			dataToReceiveFromClient = (ClypeData) inFromClient.readObject();
-			if(dataToReceiveFromClient.getType() == 1)
-			{
-				closeConnection = true;
-				server.remove(this);
-			}
+			
 			
 		} catch (ClassNotFoundException cnfe) {
 			System.err.println("Class not found exception");
@@ -106,6 +102,11 @@ public class ServerSideClientIO implements Runnable
 				else
 				{
 					server.broadcast(dataToReceiveFromClient);
+					if(dataToReceiveFromClient.getType() == 1)
+					{
+						closeConnection = true;
+						server.remove(this);
+					}
 				}
 			}
 		}
