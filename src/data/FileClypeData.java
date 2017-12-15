@@ -13,6 +13,12 @@ public class FileClypeData extends ClypeData {
 	private String fileName, fileContents;
 	
 	
+	public FileClypeData() {
+		super();
+		this.fileName = "";
+		this.fileContents = "";
+	}
+	
 	/**
 	 * @param userName Username of the client sending data.
 	 * @param fileName Filename of the file sent.
@@ -28,10 +34,39 @@ public class FileClypeData extends ClypeData {
 		}
 	}
 	
-	public FileClypeData() {
-		super();
-		this.fileName = "";
-		this.fileContents = "";
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object other) {
+		boolean data, fileContents, type, userName;
+		
+		if (!(other instanceof ClypeData))
+		{
+			return false;
+		}
+		
+		if (other instanceof FileClypeData) {
+			data = ((FileClypeData) other).getData() == this.getData();
+		}
+		else return false;
+		
+		type = this.getType() == ((FileClypeData)other).getType();
+		userName = this.getUserName() == ((FileClypeData)other).getUserName();
+		
+		return data && type && userName;
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see data.ClypeData#getData()
+	 */
+	public Object getData() {
+		return this.fileContents;
+	}
+
+	
+	public String getData(String key) {
+		return this.decrypt(this.fileContents, key);
 	}
 	
 	/**
@@ -41,13 +76,18 @@ public class FileClypeData extends ClypeData {
 		return fileName;
 	}
 
-	/**
-	 * @param fileName New path to file.
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
 	 */
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((fileContents == null) ? 0 : fileContents.hashCode());
+		result = prime * result
+				+ ((fileName == null) ? 0 : fileName.hashCode());
+		return result;
 	}
-
 	
 	public void readFileContents() throws IOException {
 		FileReader fr = null;
@@ -73,7 +113,7 @@ public class FileClypeData extends ClypeData {
 			}
 		}
 	}
-	
+
 	/**
 	 * @param key encryption key
 	 * @throws IOException if there is an issue reading file.
@@ -81,6 +121,13 @@ public class FileClypeData extends ClypeData {
 	public void readFileContents(String key) throws IOException {
 		this.readFileContents();
 		this.fileContents = this.encrypt(this.fileContents, key);
+	}
+	
+	/**
+	 * @param fileName New path to file.
+	 */
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 	/**
@@ -108,60 +155,13 @@ public class FileClypeData extends ClypeData {
 			}
 		}
 	}
-	
+
 	/**
 	 * @param key decryption key
 	 */
 	public void writeFileContents(String key) {
 		this.fileContents = this.decrypt(this.fileContents, key);
 		this.writeFileContents();
-	}
-
-	/* (non-Javadoc)
-	 * @see data.ClypeData#getData()
-	 */
-	public Object getData() {
-		return this.fileContents;
-	}
-	
-	public String getData(String key) {
-		return this.decrypt(this.fileContents, key);
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((fileContents == null) ? 0 : fileContents.hashCode());
-		result = prime * result
-				+ ((fileName == null) ? 0 : fileName.hashCode());
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object other) {
-		boolean data, fileContents, type, userName;
-		
-		if (!(other instanceof ClypeData))
-		{
-			return false;
-		}
-		
-		if (other instanceof FileClypeData) {
-			data = ((FileClypeData) other).getData() == this.getData();
-		}
-		else return false;
-		
-		type = this.getType() == ((FileClypeData)other).getType();
-		userName = this.getUserName() == ((FileClypeData)other).getUserName();
-		
-		return data && type && userName;
-		
 	}
 
 }

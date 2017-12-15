@@ -31,32 +31,21 @@ public abstract class ClypeData implements Serializable{
 	private int type;
 	private Date date;
 	
-	private int getPos(char c)
+	public ClypeData()
 	{
-		return Math.floorMod(ALPHABET.indexOf(c), 26);
-		
+		this("Anon", LISTUSERS);
 	}
 	
-	private char getChar(int i)
+	public ClypeData(int type)
 	{
-		return ALPHABET.charAt(Math.floorMod(i, 26));
+		this("Anon", type);
 	}
 	
-	protected String encrypt(String inputStringToEncrypt, String key)
+	public ClypeData(String userName, int type)
 	{
-		String output = "";
-		
-		for(int i=0; i<inputStringToEncrypt.length(); i++)
-		{
-			if(ALPHABET.contains(Character.toString(inputStringToEncrypt.charAt(i))))
-			{
-				output += getChar(getPos(inputStringToEncrypt.charAt(i)) + getPos(key.charAt(Math.floorMod(i, key.length()))) );
-			}
-			else
-				output += inputStringToEncrypt.charAt(i);
-		}
-		
-		return output;
+		this.userName = userName;
+		this.type = type;
+		this.date = new Date();
 	}
 	
 	protected String decrypt(String inputStringToDecrypt, String key)
@@ -76,37 +65,48 @@ public abstract class ClypeData implements Serializable{
 		return output;
 	}
 
-	public ClypeData(String userName, int type)
+	protected String encrypt(String inputStringToEncrypt, String key)
 	{
-		this.userName = userName;
-		this.type = type;
-		this.date = new Date();
+		String output = "";
+		
+		for(int i=0; i<inputStringToEncrypt.length(); i++)
+		{
+			if(ALPHABET.contains(Character.toString(inputStringToEncrypt.charAt(i))))
+			{
+				output += getChar(getPos(inputStringToEncrypt.charAt(i)) + getPos(key.charAt(Math.floorMod(i, key.length()))) );
+			}
+			else
+				output += inputStringToEncrypt.charAt(i);
+		}
+		
+		return output;
 	}
 	
-	public ClypeData(int type)
+	private char getChar(int i)
 	{
-		this("Anon", type);
+		return ALPHABET.charAt(Math.floorMod(i, 26));
 	}
 
-	public ClypeData()
+	abstract Object getData();
+	
+	abstract Object getData(String key);
+
+	public Date getDate() {
+		return date;
+	}
+
+	private int getPos(char c)
 	{
-		this("Anon", LISTUSERS);
+		return Math.floorMod(ALPHABET.indexOf(c), 26);
+		
+	}
+	
+	public int getType() {
+		return type;
 	}
 	
 	public String getUserName() {
 		return userName;
 	}
-
-	public int getType() {
-		return type;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-	
-	abstract Object getData();
-	
-	abstract Object getData(String key);
 	
 }

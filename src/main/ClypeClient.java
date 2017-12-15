@@ -127,6 +127,41 @@ public class ClypeClient {
 		return this.closedConnection;
 	}
 
+	// Forms the connection for the GUI
+	public void connect()
+	{
+	    try
+	    {
+	        Socket skt = new Socket(hostName, port);
+	outToServer = new ObjectOutputStream(skt.getOutputStream());
+	inFromServer = new ObjectInputStream(skt.getInputStream());
+	    }
+	    catch (BindException ex) {
+		System.err.println("Unable to bind a socket.");
+		ex.printStackTrace(System.err);
+		
+	} catch (ConnectException ex) {
+		System.err.println("Unable to connect to port.");
+		ex.printStackTrace(System.err);
+		
+	} catch (NoRouteToHostException ex) {
+		System.err.println("Routing Error.");
+		ex.printStackTrace(System.err);
+		
+	} catch (UnknownHostException ex) {
+		System.err.println("Unknown host.");
+		ex.printStackTrace(System.err);
+		
+	} catch (SocketException ex) {
+		System.err.println("Socket error");
+		ex.printStackTrace(System.err);
+		
+	} catch (IOException ex) {
+		System.err.println("IO Error");
+		ex.printStackTrace(System.err);
+	}
+	}
+	
 	public boolean equals(Object other) {
 		boolean userName, hostName, port, connection, data;
 		
@@ -145,6 +180,14 @@ public class ClypeClient {
 				this.dataToSendToServer == ((ClypeClient) other).dataToSendToServer;
 		
 		return userName && hostName && port && connection && data;
+	}
+	
+	public ClypeData getDataToReceiveFromServer() {
+		return dataToReceiveFromServer;
+	}
+	
+	public ClypeData getDataToSendToServer() {
+		return dataToSendToServer;
 	}
 	
 	public String getHostName() {
@@ -178,6 +221,10 @@ public class ClypeClient {
 				+ ((userName == null) ? 0 : userName.hashCode());
 		return result;
 	}
+
+	public boolean isClosedConnection() {
+		return closedConnection;
+	}
 	
 	public void printData() {
 		if (this.dataToReceiveFromServer.getType() == ClypeData.SENDFILE) {
@@ -188,57 +235,59 @@ public class ClypeClient {
 		}
 	}
 	
-	public void readClientData()
-	{
-		String input = inFromStd.nextLine();
-		if(input.equals("DONE"))
-		{
-			System.out.println("Logging out.");
-			dataToSendToServer = new MessageClypeData(userName, userName + " has left the server", 1);
-			closedConnection = true;
-		}
-		else if(input.equals("SENDFILE"))
-		{
-			String fileName = inFromStd.next();
-			dataToSendToServer = new FileClypeData(userName, fileName, 2);
-			try
-			{
-				((FileClypeData)dataToSendToServer).readFileContents();		
-			}
-			catch(IOException ioe)
-			{
-				dataToSendToServer = null;
-				System.err.println("File could not be read.");
-			}
-		}
-		else if(input.equals("LISTUSERS"))
-		{
-			dataToSendToServer = new MessageClypeData(userName, "", 0);
-		}
-		else
-		{
-			dataToSendToServer = new MessageClypeData(userName, input, 3);
-		}
-		
-	}
 	
-	public ClypeData receiveData() {
-		
-		try {
-			this.dataToReceiveFromServer = (ClypeData)this.inFromServer.readObject();
+        public void readClientData()
+		{
+			String input = inFromStd.nextLine();
+			if(input.equals("DONE"))
+			{
+				System.out.println("Logging out.");
+				dataToSendToServer = new MessageClypeData(userName, userName + " has left the server", 1);
+				closedConnection = true;
+			}
+			else if(input.equals("SENDFILE"))
+			{
+				String fileName = inFromStd.next();
+				dataToSendToServer = new FileClypeData(userName, fileName, 2);
+				try
+				{
+					((FileClypeData)dataToSendToServer).readFileContents();		
+				}
+				catch(IOException ioe)
+				{
+					dataToSendToServer = null;
+					System.err.println("File could not be read.");
+				}
+			}
+			else if(input.equals("LISTUSERS"))
+			{
+				dataToSendToServer = new MessageClypeData(userName, "", 0);
+			}
+			else
+			{
+				dataToSendToServer = new MessageClypeData(userName, input, 3);
+			}
+			
 		}
-		
-		catch (ClassNotFoundException e) {
-			System.err.println("Strange error!");
-			e.printStackTrace(System.err);
-		} catch (IOException e) {
-			System.err.println("File error (receiveData)!");
-			e.printStackTrace(System.err);
+        
+        
+        public ClypeData receiveData() {
+			
+			try {
+				this.dataToReceiveFromServer = (ClypeData)this.inFromServer.readObject();
+			}
+			
+			catch (ClassNotFoundException e) {
+				System.err.println("Strange error!");
+				e.printStackTrace(System.err);
+			} catch (IOException e) {
+				System.err.println("File error (receiveData)!");
+				e.printStackTrace(System.err);
+			}
+			
+			return this.dataToReceiveFromServer;
 		}
-		
-		return this.dataToReceiveFromServer;
-	}
-
+	
 	public void sendData() {
 		try {
 			outToServer.writeObject(dataToSendToServer);
@@ -248,134 +297,85 @@ public class ClypeClient {
 		}
 		
 	}
-	
+
 	private void sendUserName() {
 		this.dataToSendToServer = new MessageClypeData(userName, userName, ClypeData.SENDMESSAGE);
 		sendData();
-	}
-	
-	
-        // Forms the connection for the GUI
-        public void connect()
-        {
-            try
-            {
-                Socket skt = new Socket(hostName, port);
-		outToServer = new ObjectOutputStream(skt.getOutputStream());
-		inFromServer = new ObjectInputStream(skt.getInputStream());
-            }
-            catch (BindException ex) {
-			System.err.println("Unable to bind a socket.");
-			ex.printStackTrace(System.err);
-			
-		} catch (ConnectException ex) {
-			System.err.println("Unable to connect to port.");
-			ex.printStackTrace(System.err);
-			
-		} catch (NoRouteToHostException ex) {
-			System.err.println("Routing Error.");
-			ex.printStackTrace(System.err);
-			
-		} catch (UnknownHostException ex) {
-			System.err.println("Unknown host.");
-			ex.printStackTrace(System.err);
-			
-		} catch (SocketException ex) {
-			System.err.println("Socket error");
-			ex.printStackTrace(System.err);
-			
-		} catch (IOException ex) {
-			System.err.println("IO Error");
-			ex.printStackTrace(System.err);
-        }
-        }
-        
-        
-        public void start() {
-		try {
-			inFromStd = new Scanner(System.in);
-			Socket skt = new Socket(hostName, port);
-			outToServer = new ObjectOutputStream(skt.getOutputStream());
-			inFromServer = new ObjectInputStream(skt.getInputStream());
-			System.out.println("Connection Established");
-			
-			ClientSideServerListener listener = new ClientSideServerListener(this);
-			Thread lst = new Thread(listener);
-			lst.start();
-			
-			dataToSendToServer = new MessageClypeData(userName, userName + " has joined the server.", 3);
-			sendData();
-			
-			while(closedConnection == false)
-			{
-				readClientData();
-				sendData();
-			}
-			lst.join();
-			outToServer.close();
-			inFromServer.close();
-			inFromStd.close();
-			skt.close();
-			
-		} catch (BindException ex) {
-			System.err.println("Unable to bind a socket.");
-			ex.printStackTrace(System.err);
-			
-		} catch (ConnectException ex) {
-			System.err.println("Unable to connect to port.");
-			ex.printStackTrace(System.err);
-			
-		} catch (NoRouteToHostException ex) {
-			System.err.println("Routing Error.");
-			ex.printStackTrace(System.err);
-			
-		} catch (UnknownHostException ex) {
-			System.err.println("Unknown host.");
-			ex.printStackTrace(System.err);
-			
-		} catch (SocketException ex) {
-			System.err.println("Socket error");
-			ex.printStackTrace(System.err);
-			
-		} catch (IOException ex) {
-			System.err.println("IO Error");
-			ex.printStackTrace(System.err);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-}
-	
-	public String toString() {
-		return "ClypeClient\n User" + this.userName + "\n" +
-				"host: " + this.hostName + "\n" +
-				"port: " + this.port + "\n" +
-				this.dataToSendToServer + this.dataToReceiveFromServer;
-	}
-
-	public boolean isClosedConnection() {
-		return closedConnection;
 	}
 
 	public void setClosedConnection(boolean closedConnection) {
 		this.closedConnection = closedConnection;
 	}
 
-	public ClypeData getDataToSendToServer() {
-		return dataToSendToServer;
+	public void setDataToReceiveFromServer(ClypeData dataToReceiveFromServer) {
+		this.dataToReceiveFromServer = dataToReceiveFromServer;
 	}
 
 	public void setDataToSendToServer(ClypeData dataToSendToServer) {
 		this.dataToSendToServer = dataToSendToServer;
 	}
 
-	public ClypeData getDataToReceiveFromServer() {
-		return dataToReceiveFromServer;
+	public void start() {
+	try {
+		inFromStd = new Scanner(System.in);
+		Socket skt = new Socket(hostName, port);
+		outToServer = new ObjectOutputStream(skt.getOutputStream());
+		inFromServer = new ObjectInputStream(skt.getInputStream());
+		System.out.println("Connection Established");
+		
+		ClientSideServerListener listener = new ClientSideServerListener(this);
+		Thread lst = new Thread(listener);
+		lst.start();
+		
+		dataToSendToServer = new MessageClypeData(userName, userName + " has joined the server.", 3);
+		sendData();
+		
+		while(closedConnection == false)
+		{
+			readClientData();
+			sendData();
+		}
+		lst.join();
+		outToServer.close();
+		inFromServer.close();
+		inFromStd.close();
+		skt.close();
+		
+	} catch (BindException ex) {
+		System.err.println("Unable to bind a socket.");
+		ex.printStackTrace(System.err);
+		
+	} catch (ConnectException ex) {
+		System.err.println("Unable to connect to port.");
+		ex.printStackTrace(System.err);
+		
+	} catch (NoRouteToHostException ex) {
+		System.err.println("Routing Error.");
+		ex.printStackTrace(System.err);
+		
+	} catch (UnknownHostException ex) {
+		System.err.println("Unknown host.");
+		ex.printStackTrace(System.err);
+		
+	} catch (SocketException ex) {
+		System.err.println("Socket error");
+		ex.printStackTrace(System.err);
+		
+	} catch (IOException ex) {
+		System.err.println("IO Error");
+		ex.printStackTrace(System.err);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 	}
 
-	public void setDataToReceiveFromServer(ClypeData dataToReceiveFromServer) {
-		this.dataToReceiveFromServer = dataToReceiveFromServer;
+}
+
+	public String toString() {
+		return "ClypeClient\n User" + this.userName + "\n" +
+				"host: " + this.hostName + "\n" +
+				"port: " + this.port + "\n" +
+				this.dataToSendToServer + this.dataToReceiveFromServer;
 	}
 }
 

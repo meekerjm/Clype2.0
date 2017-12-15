@@ -8,19 +8,9 @@ public class MessageClypeData extends ClypeData {
 	
 	private String message;
 	
-	/**
-	 * @param userName User name of the client sending data.
-	 * @param message Contents of text transmission.
-	 * @param type Type of transmission.
-	 * @param key Encryption key.
-	 */
-	public MessageClypeData(String userName, String message, int type, String key) {
-		super(userName, type);
-		this.message = this.encrypt(message, key);
-		
-		if(type == ClypeData.SENDFILE){
-			throw new IllegalArgumentException("FileClypeData instantiated with non-file type.");
-		}
+	public MessageClypeData() {
+		super();
+		this.message = "";
 	}
 	
 	/**
@@ -37,11 +27,43 @@ public class MessageClypeData extends ClypeData {
 		}
 	}
 	
-	public MessageClypeData() {
-		super();
-		this.message = "";
+	/**
+	 * @param userName User name of the client sending data.
+	 * @param message Contents of text transmission.
+	 * @param type Type of transmission.
+	 * @param key Encryption key.
+	 */
+	public MessageClypeData(String userName, String message, int type, String key) {
+		super(userName, type);
+		this.message = this.encrypt(message, key);
+		
+		if(type == ClypeData.SENDFILE){
+			throw new IllegalArgumentException("FileClypeData instantiated with non-file type.");
+		}
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object other) {
+		boolean data, type, userName;
+		
+		if (!(other instanceof ClypeData))
+		{
+			return false;
+		}
+		
+		if (other instanceof MessageClypeData) {
+			data = ((MessageClypeData) other).getData() == this.getData();
+		}
+		else return false;
+		
+		type = this.getType() == ((MessageClypeData)other).getType();
+		userName = this.getUserName() == ((MessageClypeData)other).getUserName();
+		
+		return data && type && userName;
+	}
+	
 	/* (non-Javadoc)
 	 * @see data.ClypeData#getData()
 	 */
@@ -69,28 +91,6 @@ public class MessageClypeData extends ClypeData {
 				"Username: " + this.getUserName() + "\n" +
 				"Message: " + this.message + "\n" +
 				"";
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object other) {
-		boolean data, type, userName;
-		
-		if (!(other instanceof ClypeData))
-		{
-			return false;
-		}
-		
-		if (other instanceof MessageClypeData) {
-			data = ((MessageClypeData) other).getData() == this.getData();
-		}
-		else return false;
-		
-		type = this.getType() == ((MessageClypeData)other).getType();
-		userName = this.getUserName() == ((MessageClypeData)other).getUserName();
-		
-		return data && type && userName;
 	}
 
 }

@@ -48,6 +48,11 @@ public class ServerSideClientIO implements Runnable
 		this.userName = new String();
 	}
 	
+	public String getUserName()
+	{
+		return userName;
+	}
+	
 	public void receiveData()
 	{
 		try {
@@ -61,25 +66,6 @@ public class ServerSideClientIO implements Runnable
 		}
 	}
 	
-	public void sendData()
-	{
-		try {
-			outToClient.writeObject(dataToSendToClient);
-		} catch (IOException ioe) {
-			System.err.println("Error writing data to client");
-		}
-	}
-	
-	public void setDataToSendToClient(ClypeData dataToSendToClient)
-	{
-		this.dataToSendToClient = dataToSendToClient;
-	}
-	
-	public String getUserName()
-	{
-		return userName;
-	}
-
 	public void run() {
 		
 		try
@@ -115,6 +101,20 @@ public class ServerSideClientIO implements Runnable
 			System.err.println("Error starting server IO.");
 		}
 		
+	}
+	
+	public void sendData()
+	{
+		try {
+			outToClient.writeObject(dataToSendToClient);
+		} catch (IOException ioe) {
+			System.err.println("Error writing data to client");
+		}
+	}
+
+	public void setDataToSendToClient(ClypeData dataToSendToClient)
+	{
+		this.dataToSendToClient = dataToSendToClient;
 	}
 
 }
