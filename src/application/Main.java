@@ -396,7 +396,29 @@ public class Main extends Application {
 				}
 				
 			});
+                        
+                        
+                         /*Preliminary code to handle the user list and logging out
+                        
+                        public void handle(MouseEvent event) {
+					if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
+						ClypeData logoutMessage = new MessageClypeData(client.getUserName(), client.getUserName + " has left the server", ClypeData.DONE);
+                                                client.setDataToSendToServer(logoutMessage);
+                                                client.sendData();
+                                                client.closedconnection = true;
+                        }
+                        }
+                        
+                        public void handle(MouseEvent event) {
+					if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
+						ClypeData updateRequest = new MessageClypeData(userName, "", 0);
+                                                client.setDataToSendToServer(updateRequest);
+                                                client.sendData();
 			
+                        
+                        
+                        */
+                        
 			// HBox to hold both buttons with
 			HBox sendMessageButtons = new HBox();
 			sendMessageButtons.setCenterShape(true);
