@@ -43,9 +43,9 @@ public class PhotoClypeData extends ClypeData {
 	}
 
 	/**
-	 * Writes photo to fileName
+	 * @param fileName
 	 */
-	public void writeData( String fileName) {
+	public void writeData(String fileName) {
 		try {
 			File outputFile = new File(fileName);
 			ImageIO.write(this.image, "png", outputFile);

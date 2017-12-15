@@ -129,7 +129,7 @@ public class Main extends Application {
 							if (!username.isEmpty() && !hostname.isEmpty()) {
 								System.out.println("Attempting to connect to server.");
 								client = new ClypeClient(username, hostname, port);
-                                                                client.connect(); //Starts the socket and object streams
+								client.connect(); //Starts the socket and object streams
 
 								if (!client.closed()) { // allows us to check if connection was made
 									showMainWindow(primaryStage);
@@ -179,7 +179,6 @@ public class Main extends Application {
 			/*
 			 * Conversation display
 			 */
-
 			Label conversationLabel = new Label("Message Window");
 
 			// list of incoming messages
@@ -189,8 +188,8 @@ public class Main extends Application {
 			conversationOutputText.setWrapText(true);
 			conversationOutputText.setEditable(false);
 			conversationOutputText.setMinHeight(200);
-			conversationOutputText.setPromptText("Messages from other users will appear here!");
-			conversationOutputText.setFont(Font.font("Arial", FontWeight.LIGHT, 20));
+			conversationOutputText.setPromptText("Chat");
+			conversationOutputText.setFont(Font.font("Times New Roman", FontWeight.LIGHT, 20));
 
 			// add convoBox to root
 			VBox convoBox = new VBox();
@@ -222,7 +221,7 @@ public class Main extends Application {
 			usersBox.getChildren().addAll(usersBoxLabel, usersList);
 			VBox.setVgrow(usersList, Priority.ALWAYS);// Allows the list to expand with the window
 			usersBox.setScaleX(.92);
-			root.setRight(usersBox);
+			root.setLeft(usersBox);
 
 			/*
 			 * Handles incoming messages
@@ -247,7 +246,7 @@ public class Main extends Application {
 									conversationOutputText.setText(username + ": " + message);
 								} else {
 									conversationOutputText.setText(conversationOutputText.getText() + System.getProperty("line.separator")
-											+ username + ": " + message);
+									+ username + ": " + message);
 								}
 							}
 						} else if (messageFromServer.getType() == ClypeData.LISTUSERS) {
@@ -265,7 +264,7 @@ public class Main extends Application {
 									conversationOutputText.setText(username + ": " + message);
 								} else {
 									conversationOutputText.setText(conversationOutputText.getText() + System.getProperty("line.separator")
-											+ username + ": " + message);
+									+ username + ": " + message);
 								}
 							}
 						} else if (messageFromServer.getType() == ClypeData.PHOTO) {
@@ -280,7 +279,7 @@ public class Main extends Application {
 									conversationOutputText.setText(username + ": " + message);
 								} else {
 									conversationOutputText.setText(conversationOutputText.getText() + System.getProperty("line.separator")
-										+ username + ": " + message);
+									+ username + ": " + message);
 								}
 							}
 						}
@@ -317,7 +316,7 @@ public class Main extends Application {
 			messageInput.setFont(Font.font("Arial", FontWeight.LIGHT, 18));
 			messageInput.setEditable(true);
 			messageInput.setPromptText("Type a message here!");
-			
+
 			// button to send message
 			Button sendButton = new Button("Send");
 			sendButton.setMinSize(63, 150);
@@ -330,9 +329,9 @@ public class Main extends Application {
 				public void handle(MouseEvent event) {
 					if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
 						//if (client.getDataToSendToServer() == null) {
-							ClypeData textMessageData = new MessageClypeData(client.getUserName(),
-									messageInput.getText(), ClypeData.SENDMESSAGE);
-							client.setDataToSendToServer(textMessageData);
+						ClypeData textMessageData = new MessageClypeData(client.getUserName(),
+								messageInput.getText(), ClypeData.SENDMESSAGE);
+						client.setDataToSendToServer(textMessageData);
 						//}
 						client.sendData();
 
@@ -383,10 +382,10 @@ public class Main extends Application {
 				public void handle(MouseEvent event) {
 					FileChooser fileChooser = new FileChooser();
 					fileChooser.setTitle("Select File");
-					
+
 					File file = fileChooser.showOpenDialog(primaryStage);
 					PhotoClypeData photoData = new PhotoClypeData(client.getUserName(), file.getAbsolutePath());
-					
+
 					try {
 						photoData.readClientData();
 						client.setDataToSendToServer(photoData);
@@ -394,90 +393,92 @@ public class Main extends Application {
 						ioe.printStackTrace();
 					}
 				}
-				
+
 			});
-                        
-                        
-                         /*Preliminary code to handle the user list and logging out
-                        
-                        public void handle(MouseEvent event) {
+
+
+			Button logoutButton = new Button ("Logout");
+			logoutButton.setWrapText(true);
+			logoutButton.setTextAlignment(TextAlignment.CENTER);
+			logoutButton.setFont(Font.font("Times New Roman", FontWeight.BOLD, 12));
+			logoutButton.setOnMouseReleased( new EventHandler<MouseEvent>() {
+				public void handle(MouseEvent event) {
 					if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
-						ClypeData logoutMessage = new MessageClypeData(client.getUserName(), client.getUserName + " has left the server", ClypeData.DONE);
-                                                client.setDataToSendToServer(logoutMessage);
-                                                client.sendData();
-                                                client.closedconnection = true;
-                        }
-                        }
-                        
-                        public void handle(MouseEvent event) {
-					if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
-						ClypeData updateRequest = new MessageClypeData(userName, "", 0);
-                                                client.setDataToSendToServer(updateRequest);
-                                                client.sendData();
-			
-                        
-                        
-                        */
-                        
-			// HBox to hold both buttons with
-			HBox sendMessageButtons = new HBox();
-			sendMessageButtons.setCenterShape(true);
-			sendMessageButtons.getChildren().addAll(sendButton, addFileButton, addPhotoButton);
+						ClypeData logoutMessage = new MessageClypeData(client.getUserName(), client.getUserName() + " has left the server", ClypeData.DONE);
+						client.setDataToSendToServer(logoutMessage);
+						client.sendData();
+						client.setClosedConnection(true);
+					}
+				}});
 
-			// HBox for all sending message controls
-			HBox sendMessageBoxControls = new HBox();
-			HBox.setHgrow(messageInput, Priority.ALWAYS);
-			HBox.setHgrow(addFileButton, Priority.ALWAYS);
-			HBox.setHgrow(addPhotoButton, Priority.ALWAYS);
-			HBox.setHgrow(sendButton, Priority.ALWAYS);
-			sendMessageBoxControls.getChildren().addAll(leftSpacing, messageInput, sendMessageButtons, rightSpacing);
+//				public void handle(MouseEvent event) {
+//					if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
+//						ClypeData updateRequest = new MessageClypeData(userName, "", 0);
+//						client.setDataToSendToServer(updateRequest);
+//						client.sendData();
 
-			/*
-			 * set spacing between message receiving box and message sending box
-			 */
-			HBox topSpacer = new HBox();
-			topSpacer.setMaxHeight(10);
-			topSpacer.setMinHeight(10);
-			HBox bottomSpacer = new HBox();
-			bottomSpacer.setMaxHeight(10);
-			bottomSpacer.setMinHeight(10);
 
-			// add message controls to root
-			VBox sendMessageBox = new VBox();
-			sendMessageBox.getChildren().addAll(topSpacer, sendMessageBoxLabel, sendMessageBoxControls, bottomSpacer);
-			root.setBottom(sendMessageBox);
 
-			/*
-			 * Spacer for left side of border pane
-			 */
-			VBox leftSpacer = new VBox();
-			leftSpacer.setMaxWidth(10);
-			leftSpacer.setMinWidth(10);
-			root.setLeft(leftSpacer);
 
-			primaryStage.setScene(scene);
-			primaryStage.setTitle("Clype 2.0");
-			primaryStage.show();
+						// HBox to hold both buttons with
+						HBox sendMessageButtons = new HBox();
+						sendMessageButtons.setCenterShape(true);
+						sendMessageButtons.getChildren().addAll(sendButton, addFileButton, addPhotoButton, logoutButton);
 
-			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-				@Override
-				public void handle(WindowEvent arg0) {
-					client.setClosedConnection(true);
+						// HBox for all sending message controls
+						HBox sendMessageBoxControls = new HBox();
+						HBox.setHgrow(messageInput, Priority.ALWAYS);
+						HBox.setHgrow(addFileButton, Priority.ALWAYS);
+						HBox.setHgrow(addPhotoButton, Priority.ALWAYS);
+						HBox.setHgrow(sendButton, Priority.ALWAYS);
+						sendMessageBoxControls.getChildren().addAll(leftSpacing, messageInput, sendMessageButtons, rightSpacing);
+
+						/*
+						 * set spacing between message receiving box and message sending box
+						 */
+						HBox topSpacer = new HBox();
+						topSpacer.setMaxHeight(10);
+						topSpacer.setMinHeight(10);
+						HBox bottomSpacer = new HBox();
+						bottomSpacer.setMaxHeight(10);
+						bottomSpacer.setMinHeight(10);
+
+						// add message controls to root
+						VBox sendMessageBox = new VBox();
+						sendMessageBox.getChildren().addAll(topSpacer, sendMessageBoxLabel, sendMessageBoxControls, bottomSpacer);
+						root.setBottom(sendMessageBox);
+
+						/*
+						 * Spacer for left side of border pane
+						 */
+						VBox rightSpacer = new VBox();
+						rightSpacer.setMaxWidth(10);
+						rightSpacer.setMinWidth(10);
+						root.setRight(rightSpacer);
+
+						primaryStage.setScene(scene);
+						primaryStage.setTitle("Clype 2.0");
+						primaryStage.show();
+
+						primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+							@Override
+							public void handle(WindowEvent arg0) {
+								client.setClosedConnection(true);
+							}
+						});
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
-			});
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+				@Override
+				public void start(Stage primaryStage) throws Exception {
+					showLoginWindow(primaryStage);
+				}
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		showLoginWindow(primaryStage);
-	}
+				public static void main(String[] args) {
+					launch(args);
+				}
 
-	public static void main(String[] args) {
-		launch(args);
-	}
-
-}
+			}
