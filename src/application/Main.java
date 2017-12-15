@@ -129,8 +129,9 @@ public class Main extends Application {
 							if (!username.isEmpty() && !hostname.isEmpty()) {
 								System.out.println("Attempting to connect to server.");
 								client = new ClypeClient(username, hostname, port);
+                                                                client.connect(); //Starts the socket and object streams
 
-								if (client.closed()) { // allows us to check if connection was made
+								if (!client.closed()) { // allows us to check if connection was made
 									showMainWindow(primaryStage);
 								} else {
 									errorField.setText("Could not connect to server.");
@@ -328,11 +329,11 @@ public class Main extends Application {
 				@Override
 				public void handle(MouseEvent event) {
 					if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
-						if (client.getDataToSendToServer() == null) {
+						//if (client.getDataToSendToServer() == null) {
 							ClypeData textMessageData = new MessageClypeData(client.getUserName(),
 									messageInput.getText(), ClypeData.SENDMESSAGE);
 							client.setDataToSendToServer(textMessageData);
-						}
+						//}
 						client.sendData();
 
 						messageInput.clear();

@@ -48,6 +48,7 @@ public class ClypeServer {
 				ServerSideClientIO clientIO = new ServerSideClientIO(this, clientSkt);
 				serverSideClientIOList.add(clientIO);
 				(new Thread(clientIO)).start();
+				System.out.println("client accepted");
 			}
 			sskt.close();
 		}

@@ -254,7 +254,44 @@ public class ClypeClient {
 		sendData();
 	}
 	
-	public void start() {
+	
+        // Forms the connection for the GUI
+        public void connect()
+        {
+            try
+            {
+                Socket skt = new Socket(hostName, port);
+		outToServer = new ObjectOutputStream(skt.getOutputStream());
+		inFromServer = new ObjectInputStream(skt.getInputStream());
+            }
+            catch (BindException ex) {
+			System.err.println("Unable to bind a socket.");
+			ex.printStackTrace(System.err);
+			
+		} catch (ConnectException ex) {
+			System.err.println("Unable to connect to port.");
+			ex.printStackTrace(System.err);
+			
+		} catch (NoRouteToHostException ex) {
+			System.err.println("Routing Error.");
+			ex.printStackTrace(System.err);
+			
+		} catch (UnknownHostException ex) {
+			System.err.println("Unknown host.");
+			ex.printStackTrace(System.err);
+			
+		} catch (SocketException ex) {
+			System.err.println("Socket error");
+			ex.printStackTrace(System.err);
+			
+		} catch (IOException ex) {
+			System.err.println("IO Error");
+			ex.printStackTrace(System.err);
+        }
+        }
+        
+        
+        public void start() {
 		try {
 			inFromStd = new Scanner(System.in);
 			Socket skt = new Socket(hostName, port);
