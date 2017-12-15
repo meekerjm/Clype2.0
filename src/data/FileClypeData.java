@@ -1,6 +1,8 @@
 package data;
 
-import java.io.*;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * @author pawlactb
@@ -111,14 +113,14 @@ public class FileClypeData extends ClypeData {
 	 * @param key decryption key
 	 */
 	public void writeFileContents(String key) {
-		String fc = this.decrypt(this.fileContents, key);
+		this.fileContents = this.decrypt(this.fileContents, key);
 		this.writeFileContents();
 	}
 
 	/* (non-Javadoc)
 	 * @see data.ClypeData#getData()
 	 */
-	public String getData() {
+	public Object getData() {
 		return this.fileContents;
 	}
 	

@@ -7,6 +7,8 @@
  * userName 	A string which holds the username of whoever sent the message or file
  * type 		An int which describes the purpose of a particular data class
  * date 		Holds the time in which the ClypeData object was created
+ * 
+ * Last modified 14 Dec 2017: added PHOTO constant.
  */
 	
 
@@ -21,6 +23,7 @@ public abstract class ClypeData implements Serializable{
 	public static final int DONE = 1;
 	public static final int SENDFILE = 2;
 	public static final int SENDMESSAGE = 3;
+	public static final int PHOTO = 4;
 	
 	private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	
@@ -102,8 +105,8 @@ public abstract class ClypeData implements Serializable{
 		return date;
 	}
 	
-	abstract String getData();
+	abstract Object getData();
 	
-	abstract String getData(String key);
+	abstract Object getData(String key);
 	
 }
