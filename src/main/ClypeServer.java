@@ -16,25 +16,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import data.ClypeData;
+import data.MessageClypeData;
 
 public class ClypeServer {
-	public static void main(String[] args)
-	{
-		if(args.length == 1)
-		{
-			ClypeServer server = new ClypeServer(Integer.parseInt(args[0]));
-			server.start();
-		}
-		else if(args.length == 0)
-		{
-			ClypeServer server = new ClypeServer();
-			server.start();
-		}
-		else
-		{
-			System.out.println("Too many arguments provided");
-		}
-	}
 	private int port;
 	private boolean closeConnection;
 	
@@ -55,50 +39,6 @@ public class ClypeServer {
 		this.serverSideClientIOList = new ArrayList<ServerSideClientIO>(0);
 	}
 	
-	public synchronized void broadcast(ClypeData dataToBroadcastToClients)
-	{
-		for(int i=0; i<serverSideClientIOList.size(); i++)
-		{
-			serverSideClientIOList.get(i).setDataToSendToClient(dataToBroadcastToClients);
-			serverSideClientIOList.get(i).sendData();
-		}
-	}
-	
-	public boolean equals(Object o)
-	{
-		ClypeServer otherServer = (ClypeServer)o;
-		return this.hashCode() == otherServer.hashCode();
-	}
-	
-	public int getPort() {
-		return port;
-	}
-
-	public String getUserList()
-	{
-		String users = new String();
-		
-		for(int i=0; i<serverSideClientIOList.size(); i++)
-		{
-			users += (serverSideClientIOList.get(i).getUserName() + ", ");
-		}
-		
-		return users;
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		int hash = 3;
-		hash = hash*5 + port;
-		return hash;
-	}
-	
-	public synchronized void remove(ServerSideClientIO serverSideClientToRemove)
-	{
-		serverSideClientIOList.remove(serverSideClientToRemove);
-	}
-	
 	public void start()
 	{
 		try
@@ -110,6 +50,7 @@ public class ClypeServer {
 				ServerSideClientIO clientIO = new ServerSideClientIO(this, clientSkt);
 				serverSideClientIOList.add(clientIO);
 				(new Thread(clientIO)).start();
+                                
 				System.out.println("client accepted");
 			}
 			sskt.close();
@@ -118,6 +59,69 @@ public class ClypeServer {
 		{
 			System.err.println("IO Error starting server");
 		}
+        }
+	
+	public synchronized void broadcast(ClypeData dataToBroadcastToClients)
+	{
+		for(int i=0; i<serverSideClientIOList.size(); i++)
+		{
+			serverSideClientIOList.get(i).setDataToSendToClient(dataToBroadcastToClients);
+			serverSideClientIOList.get(i).sendData();
+		}
+	}
+	
+	public synchronized void remove(ServerSideClientIO serverSideClientToRemove)
+	{
+		serverSideClientIOList.remove(serverSideClientToRemove);
+                broadcast(new MessageClypeData("Server", getUserList(), ClypeData.LISTUSERS));
+	}
+	
+	public String getUserList()
+	{
+		String users = new String();
+		
+		for(int i=0; i<serverSideClientIOList.size(); i++)
+		{
+			users += (serverSideClientIOList.get(i).getUserName() + "\n");
+		}
+		
+		return users;
+	}
+
+	public int getPort() {
+		return port;
+	}
+	
+	public static void main(String[] args)
+	{
+		if(args.length == 1)
+		{
+			ClypeServer server = new ClypeServer(Integer.parseInt(args[0]));
+			server.start();
+		}
+		else if(args.length == 0)
+		{
+			ClypeServer server = new ClypeServer();
+			server.start();
+		}
+		else
+		{
+			System.out.println("Too many arguments provided");
+		}
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		int hash = 3;
+		hash = hash*5 + port;
+		return hash;
+	}
+	
+	public boolean equals(Object o)
+	{
+		ClypeServer otherServer = (ClypeServer)o;
+		return this.hashCode() == otherServer.hashCode();
 	}
 	
 	public String toString()

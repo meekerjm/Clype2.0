@@ -76,23 +76,16 @@ public class ServerSideClientIO implements Runnable
 			receiveData();
 			userName = dataToReceiveFromClient.getUserName();
 			server.broadcast(dataToReceiveFromClient);
+                        server.broadcast(new MessageClypeData("Server", server.getUserList(), ClypeData.LISTUSERS));
 		
 			while(closeConnection == false)
 			{
 				receiveData();
-				if(dataToReceiveFromClient.getType() == 0)
+                                server.broadcast(dataToReceiveFromClient);
+				if(dataToReceiveFromClient.getType() == ClypeData.DONE)
 				{
-					dataToSendToClient = new MessageClypeData("User List:", server.getUserList(), 3);
-					sendData();
-				}
-				else
-				{
-					server.broadcast(dataToReceiveFromClient);
-					if(dataToReceiveFromClient.getType() == 1)
-					{
-						closeConnection = true;
-						server.remove(this);
-					}
+					closeConnection = true;
+					server.remove(this);
 				}
 			}
 		}

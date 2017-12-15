@@ -26,6 +26,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -132,6 +134,8 @@ public class Main extends Application {
 								client.connect(); //Starts the socket and object streams
 
 								if (!client.closed()) { // allows us to check if connection was made
+                                                                        client.setDataToSendToServer(new MessageClypeData(client.getUserName(), client.getUserName() + " has joined the server", ClypeData.SENDMESSAGE ));
+                                                                        client.sendData();
 									showMainWindow(primaryStage);
 								} else {
 									errorField.setText("Could not connect to server.");
@@ -234,7 +238,7 @@ public class Main extends Application {
 					while (!client.closed()) {
 						ClypeData messageFromServer = client.receiveData();
 
-						if (messageFromServer.getType() == ClypeData.SENDMESSAGE) {
+						if (messageFromServer.getType() == ClypeData.SENDMESSAGE || messageFromServer.getType() == ClypeData.DONE) {
 							MessageClypeData messageDataFromServer = (MessageClypeData) messageFromServer;
 							String username = messageDataFromServer.getUserName();
 							String message = messageDataFromServer.getData();
@@ -270,7 +274,22 @@ public class Main extends Application {
 						} else if (messageFromServer.getType() == ClypeData.PHOTO) {
 							PhotoClypeData photoMessageFromServer = (PhotoClypeData) messageFromServer;
 							String username = photoMessageFromServer.getUserName();
-							RenderedImage message = photoMessageFromServer.getData();
+							Image message = (Image)photoMessageFromServer.getData();
+                                                        
+                                                        ImageView iv = new ImageView();
+                                                        iv.setImage(message);
+                                                        
+                                                        Stage imgStage = new Stage();
+                                                        BorderPane imagepane = new BorderPane();
+                                                        Scene imagescene = new Scene(imagepane);
+                                                        HBox imagebox = new HBox();
+                                                        imagebox.getChildren().add(iv);
+                                                        imagepane.getChildren().add(imagebox);
+                                                        
+                                                        imgStage.setTitle(username);
+                                                        imgStage.setScene(imagescene);
+                                                        imgStage.sizeToScene();
+                                                        imgStage.show();
 
 							if (!closedSocket) {
 								if (noMessages) {
@@ -408,6 +427,7 @@ public class Main extends Application {
 						client.setDataToSendToServer(logoutMessage);
 						client.sendData();
 						client.setClosedConnection(true);
+                                                primaryStage.close();
 					}
 				}});
 
