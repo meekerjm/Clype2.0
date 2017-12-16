@@ -1,6 +1,5 @@
 package application;
 
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -227,6 +226,14 @@ public class Main extends Application {
 			VBox.setVgrow(usersList, Priority.ALWAYS);// Allows the list to expand with the window
 			usersBox.setScaleX(.92);
 			root.setLeft(usersBox);
+                        
+                        ImageView iv = new ImageView();
+                        iv.setFitWidth(200);
+                        iv.setPreserveRatio(true);
+                        
+                        HBox imagebox = new HBox();
+                        imagebox.getChildren().add(iv);
+                        root.setRight(imagebox);
 
 			/*
 			 * Handles incoming messages
@@ -276,21 +283,8 @@ public class Main extends Application {
                                                         PhotoClypeData photoMessageFromServer = (PhotoClypeData) messageFromServer;
 							String username = photoMessageFromServer.getUserName();
 							Image image = SwingFXUtils.toFXImage(photoMessageFromServer.getData(), null);
-                                                        
-                                                        ImageView iv = new ImageView();
                                                         iv.setImage(image);
                                                         
-                                                        BorderPane imagepane = new BorderPane();
-                                                        HBox imagebox = new HBox();
-                                                        imagebox.getChildren().add(iv);
-                                                        imagepane.getChildren().add(imagebox);
-                                                        
-                                                        Scene imagescene = new Scene(imagepane, 100, 100);
-                                                        Stage imgStage = new Stage();
-                                                        imgStage.setTitle(username);
-                                                        imgStage.setScene(imagescene);
-                                                        imgStage.sizeToScene();
-                                                        imgStage.show();
 						}
 					}
 					return null;
@@ -328,7 +322,7 @@ public class Main extends Application {
 
 			// button to send message
 			Button sendButton = new Button("Send");
-			sendButton.setMinSize(63, 150);
+			sendButton.setMinSize(60, 150);
 			sendButton.setWrapText(true);
 			sendButton.setTextAlignment(TextAlignment.CENTER);
 			sendButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
@@ -352,7 +346,7 @@ public class Main extends Application {
 
 			// button to send media
 			Button addFileButton = new Button("Add File");
-			addFileButton.setMinSize(55, 150);
+			addFileButton.setMinSize(60, 150);
 			addFileButton.setWrapText(true);
 			addFileButton.setTextAlignment(TextAlignment.CENTER);
 			addFileButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
@@ -381,7 +375,7 @@ public class Main extends Application {
 			});
 
 			Button addPhotoButton = new Button("Add photo");
-			addPhotoButton.setMinSize(55, 150);
+			addPhotoButton.setMinSize(60, 150);
 			addPhotoButton.setWrapText(true);
 			addPhotoButton.setTextAlignment(TextAlignment.CENTER);
 			addPhotoButton.setFont(Font.font("Times New Roman", FontWeight.BOLD, 15));
@@ -408,6 +402,7 @@ public class Main extends Application {
 
 
 			Button logoutButton = new Button ("Logout");
+                        logoutButton.setMinSize(60, 150);
 			logoutButton.setWrapText(true);
 			logoutButton.setTextAlignment(TextAlignment.CENTER);
 			logoutButton.setFont(Font.font("Times New Roman", FontWeight.BOLD, 12));
@@ -421,12 +416,6 @@ public class Main extends Application {
                                                 primaryStage.close();
 					}
 				}});
-
-//				public void handle(MouseEvent event) {
-//					if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
-//						ClypeData updateRequest = new MessageClypeData(userName, "", 0);
-//						client.setDataToSendToServer(updateRequest);
-//						client.sendData();
 
 
 
@@ -458,14 +447,6 @@ public class Main extends Application {
 						VBox sendMessageBox = new VBox();
 						sendMessageBox.getChildren().addAll(topSpacer, sendMessageBoxLabel, sendMessageBoxControls, bottomSpacer);
 						root.setBottom(sendMessageBox);
-
-						/*
-						 * Spacer for left side of border pane
-						 */
-						VBox rightSpacer = new VBox();
-						rightSpacer.setMaxWidth(10);
-						rightSpacer.setMinWidth(10);
-						root.setRight(rightSpacer);
 
 						primaryStage.setScene(scene);
 						primaryStage.setTitle("Clype 2.0");
