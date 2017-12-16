@@ -366,6 +366,7 @@ public class Main extends Application {
 						try {
 							fileData.readFileContents();
 							client.setDataToSendToServer(fileData);
+                                                        client.sendData();
 						} catch (IOException ioe) {
 							ioe.printStackTrace();
 						}

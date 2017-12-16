@@ -3,6 +3,7 @@ package data;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 
 /**
  * @author pawlactb
@@ -88,29 +89,30 @@ public class FileClypeData extends ClypeData {
 				+ ((fileName == null) ? 0 : fileName.hashCode());
 		return result;
 	}
-	
-	public void readFileContents() throws IOException {
-		FileReader fr = null;
-		try {
-			fr = new FileReader(this.fileName);
-			fr.read(this.fileContents.toCharArray());
-		}
-		catch (IOException e)
+        
+        public void readFileContents() throws IOException
+	{
+		try
 		{
-			e.printStackTrace();
-		}
+			FileReader reader = new FileReader(fileName);
+			boolean done = false;
+			fileContents = "";
 		
-		finally{
-			try {
-				if(fr != null)
+			while(!done)
+			{
+				int next = reader.read();
+				done = next==-1;
+			
+				if(!done)
 				{
-					fr.close();
+					fileContents += (char)next;
 				}
-				
 			}
-			catch (IOException ex) {
-				ex.printStackTrace();
-			}
+			reader.close();
+		}
+		catch(FileNotFoundException fnfe)
+		{
+			System.err.println("The specified file cannot be found.");
 		}
 	}
 
