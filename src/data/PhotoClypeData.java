@@ -4,12 +4,15 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 
 import javax.imageio.ImageIO;
 
 public class PhotoClypeData extends ClypeData {
 	private String fileName;
-	private BufferedImage image;
+	private transient BufferedImage image;
 	
 
 	
@@ -18,11 +21,21 @@ public class PhotoClypeData extends ClypeData {
 		this.fileName = imagePath;
 	}
 
-	/**
+	private void writeObject(ObjectOutputStream out) throws IOException {
+         out.defaultWriteObject();
+         ImageIO.write(image, "png", out);
+        }
+        
+        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+            in.defaultReadObject();
+            image = ImageIO.read(in);
+        }        
+        
+        /**
 	 * Returns stored image
 	 * @return the image
 	 */
-	public RenderedImage getData() {
+	public BufferedImage getData() {
 		return this.image;
 	}
 	

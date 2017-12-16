@@ -31,6 +31,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.embed.swing.SwingFXUtils;
 import main.ClypeClient;
 
 public class Main extends Application {
@@ -272,35 +273,24 @@ public class Main extends Application {
 								}
 							}
 						} else if (messageFromServer.getType() == ClypeData.PHOTO) {
-							PhotoClypeData photoMessageFromServer = (PhotoClypeData) messageFromServer;
+                                                        PhotoClypeData photoMessageFromServer = (PhotoClypeData) messageFromServer;
 							String username = photoMessageFromServer.getUserName();
-							Image message = (Image)photoMessageFromServer.getData();
+							Image image = SwingFXUtils.toFXImage(photoMessageFromServer.getData(), null);
                                                         
                                                         ImageView iv = new ImageView();
-                                                        iv.setImage(message);
+                                                        iv.setImage(image);
                                                         
-                                                        Stage imgStage = new Stage();
                                                         BorderPane imagepane = new BorderPane();
-                                                        Scene imagescene = new Scene(imagepane);
                                                         HBox imagebox = new HBox();
                                                         imagebox.getChildren().add(iv);
                                                         imagepane.getChildren().add(imagebox);
                                                         
+                                                        Scene imagescene = new Scene(imagepane, 100, 100);
+                                                        Stage imgStage = new Stage();
                                                         imgStage.setTitle(username);
                                                         imgStage.setScene(imagescene);
                                                         imgStage.sizeToScene();
                                                         imgStage.show();
-
-							if (!closedSocket) {
-								if (noMessages) {
-									conversationOutputText.clear();
-									noMessages = false;
-									conversationOutputText.setText(username + ": " + message);
-								} else {
-									conversationOutputText.setText(conversationOutputText.getText() + System.getProperty("line.separator")
-									+ username + ": " + message);
-								}
-							}
 						}
 					}
 					return null;
@@ -408,6 +398,7 @@ public class Main extends Application {
 					try {
 						photoData.readClientData();
 						client.setDataToSendToServer(photoData);
+                                                client.sendData();
 					} catch (Exception ioe) {
 						ioe.printStackTrace();
 					}
